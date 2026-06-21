@@ -1,25 +1,28 @@
+# NoDebugCheat
 
-Installation information
-=======
+NoDebugCheat is a NeoForge mod that blocks F3 debug access for players without permission.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+Only opped or authorized users can use F3 and F3 key combinations, including hitboxes, chunk borders, copied location data, copied block/entity data, and gamemode swap shortcuts.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+Regular players can still view coordinates by holding a compass, keeping navigation fair without using the debug screen as a cheat.
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## Config
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+- `opPermissionLevel`: minimum vanilla permission level required for debug access.
+- `authorizedUuids`: extra player UUIDs allowed to use debug tools.
+- `showCompassCoordinates`: show coordinates while holding a compass.
+- `compassExactCoordinates`: show decimal coordinates instead of block coordinates.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+Generated config example:
+
+```toml
+blockDebugOverlay = true
+blockHitboxes = true
+blockChunkBorders = true
+
+opPermissionLevel = 2
+authorizedUuids = ["00000000-0000-0000-0000-000000000000"]
+
+showCompassCoordinates = true
+compassExactCoordinates = false
+```
