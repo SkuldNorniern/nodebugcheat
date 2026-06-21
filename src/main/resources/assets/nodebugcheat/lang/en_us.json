@@ -1,0 +1,13 @@
+{
+  "itemGroup.nodebugcheat": "Example Mod Tab",
+  "block.nodebugcheat.example_block": "Example Block",
+  "item.nodebugcheat.example_item": "Example Item",
+
+  "nodebugcheat.configuration.title": "NoDebugCheat Configs",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml": "NoDebugCheat Configs",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml.title": "NoDebugCheat Configs",
+  "nodebugcheat.configuration.items": "Item List",
+  "nodebugcheat.configuration.logDirtBlock": "Log Dirt Block",
+  "nodebugcheat.configuration.magicNumberIntroduction": "Magic Number Text",
+  "nodebugcheat.configuration.magicNumber": "Magic Number"
+}
