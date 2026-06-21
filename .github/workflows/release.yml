@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -45,36 +45,76 @@ jobs:
       - name: Build
         run: ./gradlew build -Pmod_version=${{ steps.meta.outputs.VERSION }}
 
-      - name: Generate changelog
-        id: changelog
+      - name: Package metadata
+        id: package
         run: |
-          PREV=$(git tag --sort=-version:refname \
+          JAR_FILE="build/libs/nodebugcheat-${{ steps.meta.outputs.VERSION }}.jar"
+          JAR_NAME="$(basename "$JAR_FILE")"
+          SHA256="$(sha256sum "$JAR_FILE" | cut -d ' ' -f1)"
+
+          echo "$SHA256  $JAR_NAME" > "build/libs/${JAR_NAME}.sha256"
+          echo "JAR_FILE=$JAR_FILE" >> "$GITHUB_OUTPUT"
+          echo "JAR_NAME=$JAR_NAME" >> "$GITHUB_OUTPUT"
+          echo "SHA256=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "SHA_FILE=build/libs/${JAR_NAME}.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname \
             | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
-            | sed -n '2p')
-          if [ -z "$PREV" ]; then
-            LOG=$(git log --pretty=format:"- %s (%h)" HEAD)
-          else
-            LOG=$(git log --pretty=format:"- %s (%h)" "${PREV}..HEAD")
-          fi
-          # Write notes to file so multiline content is handled safely
-          cat > /tmp/release_notes.md << NOTES
-          ## NoDebugCheat ${{ github.ref_name }}
+            | grep -v "^${GITHUB_REF_NAME}$" \
+            | head -1)
+          RANGE="${PREV_TAG:+${PREV_TAG}..HEAD}"
+          [ -z "$PREV_TAG" ] && RANGE="HEAD"
 
-          **Minecraft:** ${{ steps.meta.outputs.MC_VERSION }}
-          **NeoForge:** ${{ steps.meta.outputs.NEO_VERSION }}
+          section() {
+            git log "$RANGE" --pretty=format:"%s" \
+              | grep -E "^${1}(\([^)]*\))?: " \
+              | sed -E "s/^${1}(\([^)]*\))?: /- /" \
+              || true
+          }
 
-          ### Changes
-          $LOG
+          FEATS=$(section feat)
+          FIXES=$(section fix)
+          DOCS=$(section docs)
+          REFACTORS=$(section refactor)
+          CI=$(section ci)
+          OTHERS=$(git log "$RANGE" --pretty=format:"%s" \
+            | grep -Ev "^(feat|fix|docs|refactor|ci|chore|style|test|perf|build)(\([^)]*\))?: " \
+            || true)
 
-          ---
-          Download the JAR and place it in your `mods/` folder.
-          NOTES
+          {
+            echo "## NoDebugCheat ${{ github.ref_name }}"
+            echo ""
+            echo "**Minecraft:** ${{ steps.meta.outputs.MC_VERSION }}"
+            echo "**NeoForge:** ${{ steps.meta.outputs.NEO_VERSION }}"
+            echo ""
+            echo "## What's Changed"
+            echo ""
+            if [ -n "$FEATS" ]; then echo "### Features"; echo "$FEATS"; echo ""; fi
+            if [ -n "$FIXES" ]; then echo "### Bug Fixes"; echo "$FIXES"; echo ""; fi
+            if [ -n "$DOCS" ]; then echo "### Documentation"; echo "$DOCS"; echo ""; fi
+            if [ -n "$REFACTORS" ]; then echo "### Refactor"; echo "$REFACTORS"; echo ""; fi
+            if [ -n "$CI" ]; then echo "### CI"; echo "$CI"; echo ""; fi
+            if [ -n "$OTHERS" ]; then echo "### Other"; echo "$OTHERS" | sed 's/^/- /'; echo ""; fi
+            echo "---"
+            echo ""
+            echo "### Downloads"
+            echo ""
+            echo "| File | SHA256 |"
+            echo "|------|--------|"
+            echo "| \`${{ steps.package.outputs.JAR_NAME }}\` | \`${{ steps.package.outputs.SHA256 }}\` |"
+            echo ""
+            echo "Place the JAR in your \`mods/\` folder."
+          } > /tmp/release_notes.md
 
       - name: Create GitHub Release
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --title "NoDebugCheat $GITHUB_REF_NAME" \
             --notes-file /tmp/release_notes.md \
-            "build/libs/nodebugcheat-${{ steps.meta.outputs.VERSION }}.jar"
+            --target "$GITHUB_SHA" \
+            "${{ steps.package.outputs.JAR_FILE }}" \
+            "${{ steps.package.outputs.SHA_FILE }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
