@@ -11,6 +11,9 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,13 +42,42 @@ jobs:
       - name: Build
         run: ./gradlew build --no-build-cache
 
-      - name: List build outputs
-        run: ls -lh build/libs/
+      - name: Inspect JAR
+        run: |
+          JAR="build/libs/nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}.jar"
+          echo "=== Files in build/libs/ ==="
+          ls -lh build/libs/
+          echo ""
+          echo "=== JAR contents ==="
+          unzip -l "$JAR"
+          echo ""
+          echo "=== META-INF/MANIFEST.MF ==="
+          unzip -p "$JAR" META-INF/MANIFEST.MF
+          echo ""
+          echo "=== META-INF/neoforge.mods.toml ==="
+          unzip -p "$JAR" META-INF/neoforge.mods.toml
 
-      - name: Upload artifact
+      - name: Upload artifact (raw JAR — extract the ZIP to get the .jar)
         uses: actions/upload-artifact@v4
         with:
           name: nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}
           path: build/libs/nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}.jar
           if-no-files-found: error
           retention-days: 7
+
+      - name: Publish dev pre-release (direct JAR download, no ZIP)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          gh release delete dev --yes --cleanup-tag 2>/dev/null || true
+          gh release create dev \
+            --title "Dev Build ($(date -u +%Y-%m-%d))" \
+            --notes "Latest build from \`main\`. Not a stable release — use a tagged version for production.
+
+          **Minecraft:** $(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
+          **NeoForge:** $(grep '^neo_version=' gradle.properties | cut -d= -f2)
+          **Commit:** ${{ github.sha }}" \
+            --prerelease \
+            --target "${{ github.sha }}" \
+            "build/libs/nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}.jar"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
