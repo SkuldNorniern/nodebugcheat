@@ -9,6 +9,7 @@
   "nodebugcheat.configuration.blockHitboxes": "Block Hitbox View",
   "nodebugcheat.configuration.blockChunkBorders": "Block Chunk Borders",
   "nodebugcheat.configuration.opPermissionLevel": "Required Permission Level",
+  "nodebugcheat.configuration.authorizedUuids": "Authorized Player UUIDs",
   "nodebugcheat.configuration.showCompassCoordinates": "Compass Coordinates",
   "nodebugcheat.configuration.compassExactCoordinates": "Exact Compass Coordinates"
 }
