@@ -1,12 +1,10 @@
 package com.nornity.no_debug_cheat.mixin;
 
 import com.nornity.no_debug_cheat.Config;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,17 +12,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Draws compass-coordinate text at the top-center of the screen whenever
- * the local player holds a compass in main hand or offhand.
+ * Shows compass coordinates via the overlay-message slot (same API as the
+ * vanilla action bar) while the local player holds a compass. Runs each
+ * game tick so the message stays visible as long as the compass is held.
+ *
+ * setOverlayMessage is the vanilla mechanism used for persistent center-screen
+ * messages. Calling it every tick keeps the timer alive; releasing the compass
+ * lets the existing timer run out naturally.
  */
-@Mixin(Gui.class)
+@Mixin(Minecraft.class)
 public class GuiCompassMixin {
 
-    @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void onExtractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void onTick(CallbackInfo ci) {
         if (!Config.SHOW_COMPASS_COORDINATES.getAsBoolean()) return;
 
-        Minecraft mc = Minecraft.getInstance();
+        Minecraft mc = (Minecraft) (Object) this;
         LocalPlayer player = mc.player;
         if (player == null || mc.options.hideGui) return;
 
@@ -32,15 +35,16 @@ public class GuiCompassMixin {
                 || player.getOffhandItem().is(Items.COMPASS);
         if (!holdingCompass) return;
 
-        String coords;
+        Component coords;
         if (Config.COMPASS_EXACT_COORDINATES.getAsBoolean()) {
-            coords = String.format("X: %.1f  Y: %.1f  Z: %.1f",
-                    player.getX(), player.getY(), player.getZ());
+            coords = Component.literal(String.format("X: %.1f  Y: %.1f  Z: %.1f",
+                    player.getX(), player.getY(), player.getZ()));
         } else {
             BlockPos pos = player.blockPosition();
-            coords = String.format("X: %d  Y: %d  Z: %d", pos.getX(), pos.getY(), pos.getZ());
+            coords = Component.literal(String.format("X: %d  Y: %d  Z: %d",
+                    pos.getX(), pos.getY(), pos.getZ()));
         }
 
-        graphics.centeredText(mc.font, coords, graphics.guiWidth() / 2, 4, 0xFFFFFF);
+        mc.gui.setOverlayMessage(coords, false);
     }
 }

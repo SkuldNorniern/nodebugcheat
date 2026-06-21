@@ -21,7 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DebugScreenOverlay.class)
 public class DebugScreenOverlayMixin {
 
-    @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
+    @Inject(
+        method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
+        at = @At("HEAD"), cancellable = true
+    )
     private void onExtractRenderState(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if (Config.BLOCK_DEBUG_OVERLAY.getAsBoolean() && !ClientDebugState.isDebugAllowed()) {
             // Reset the visible flag so isShowingDebugScreen() returns false
