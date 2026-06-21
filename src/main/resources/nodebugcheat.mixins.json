@@ -5,7 +5,8 @@
   "mixins": [],
   "client": [
     "DebugScreenOverlayMixin",
-    "MinecraftDebugKeysMixin"
+    "MinecraftDebugKeysMixin",
+    "GuiCompassMixin"
   ],
   "injectors": {
     "defaultRequire": 1
