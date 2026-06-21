@@ -1,5 +1,8 @@
 package com.nornity.no_debug_cheat;
 
+import java.util.List;
+import java.util.UUID;
+
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
@@ -21,6 +24,10 @@ public class Config {
             .comment("Minimum vanilla permission level required to use debug features (1–4; 2 = standard op)")
             .defineInRange("opPermissionLevel", 2, 1, 4);
 
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> AUTHORIZED_UUIDS = BUILDER
+            .comment("Player UUIDs that may use debug features even if they are below the configured op permission level")
+            .defineListAllowEmpty("authorizedUuids", List.of(), () -> "", Config::validateUuid);
+
     public static final ModConfigSpec.BooleanValue SHOW_COMPASS_COORDINATES = BUILDER
             .comment("Show player coordinates as a HUD overlay while holding a compass")
             .define("showCompassCoordinates", true);
@@ -30,4 +37,17 @@ public class Config {
             .define("compassExactCoordinates", false);
 
     static final ModConfigSpec SPEC = BUILDER.build();
+
+    private static boolean validateUuid(Object value) {
+        if (!(value instanceof String uuid)) {
+            return false;
+        }
+
+        try {
+            UUID.fromString(uuid);
+            return true;
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+    }
 }
