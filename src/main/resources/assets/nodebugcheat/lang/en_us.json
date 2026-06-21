@@ -1,13 +1,14 @@
 {
-  "itemGroup.nodebugcheat": "Example Mod Tab",
-  "block.nodebugcheat.example_block": "Example Block",
-  "item.nodebugcheat.example_item": "Example Item",
+  "nodebugcheat.debug.blocked": "Debug tools are disabled on this server.",
 
-  "nodebugcheat.configuration.title": "NoDebugCheat Configs",
-  "nodebugcheat.configuration.section.nodebugcheat.common.toml": "NoDebugCheat Configs",
-  "nodebugcheat.configuration.section.nodebugcheat.common.toml.title": "NoDebugCheat Configs",
-  "nodebugcheat.configuration.items": "Item List",
-  "nodebugcheat.configuration.logDirtBlock": "Log Dirt Block",
-  "nodebugcheat.configuration.magicNumberIntroduction": "Magic Number Text",
-  "nodebugcheat.configuration.magicNumber": "Magic Number"
+  "nodebugcheat.configuration.title": "NoDebugCheat Config",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml": "NoDebugCheat Config",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml.title": "NoDebugCheat Config",
+
+  "nodebugcheat.configuration.blockDebugOverlay": "Block Debug Overlay",
+  "nodebugcheat.configuration.blockHitboxes": "Block Hitbox View",
+  "nodebugcheat.configuration.blockChunkBorders": "Block Chunk Borders",
+  "nodebugcheat.configuration.opPermissionLevel": "Required Permission Level",
+  "nodebugcheat.configuration.showCompassCoordinates": "Compass Coordinates",
+  "nodebugcheat.configuration.compassExactCoordinates": "Exact Compass Coordinates"
 }

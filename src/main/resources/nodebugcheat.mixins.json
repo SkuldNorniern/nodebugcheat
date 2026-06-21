@@ -3,6 +3,10 @@
   "package": "com.nornity.no_debug_cheat.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
+  "client": [
+    "DebugScreenOverlayMixin",
+    "MinecraftDebugKeysMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
