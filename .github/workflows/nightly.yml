@@ -44,7 +44,7 @@ jobs:
           echo "NEO_VERSION=$(grep '^neo_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
 
       - name: Build
-        run: ./gradlew build -Pmod_version=${{ steps.meta.outputs.NIGHTLY_VERSION }}
+        run: ./gradlew build --no-build-cache -Pmod_version=${{ steps.meta.outputs.NIGHTLY_VERSION }}
 
       - name: Package metadata
         id: package

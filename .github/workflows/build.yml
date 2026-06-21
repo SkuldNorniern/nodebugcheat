@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches: ['**']
-    tags-ignore: ['**']   # tags are handled by release.yml
+    tags-ignore: ['**']
   pull_request:
   workflow_dispatch:
 
@@ -32,15 +32,20 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Read version
+        id: version
+        run: echo "MOD_VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build --no-build-cache
+
+      - name: List build outputs
+        run: ls -lh build/libs/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nodebugcheat-${{ github.sha }}
-          path: |
-            build/libs/nodebugcheat-*.jar
-            !build/libs/nodebugcheat-*-sources.jar
+          name: nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}
+          path: build/libs/nodebugcheat-${{ steps.version.outputs.MOD_VERSION }}.jar
           if-no-files-found: error
           retention-days: 7
