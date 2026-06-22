@@ -5,6 +5,7 @@ import com.nornity.no_debug_cheat.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,8 +28,15 @@ public class DebugScreenOverlayMixin {
     )
     private void onExtractRenderState(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if (Config.BLOCK_DEBUG_OVERLAY.getAsBoolean() && !ClientDebugState.isDebugAllowed()) {
+            Minecraft mc = Minecraft.getInstance();
             // Reset the visible flag so isShowingDebugScreen() returns false
-            Minecraft.getInstance().debugEntries.setOverlayVisible(false);
+            mc.debugEntries.setOverlayVisible(false);
+            if (ClientDebugState.shouldShowBlockedMessage()) {
+                mc.gui.setOverlayMessage(
+                        Component.translatable("nodebugcheat.debug.blocked"),
+                        false
+                );
+            }
             ci.cancel();
         }
     }
