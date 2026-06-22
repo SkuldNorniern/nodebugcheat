@@ -1,0 +1,15 @@
+{
+  "nodebugcheat.debug.blocked": "이 서버에서는 디버그 도구가 비활성화되어 있습니다.",
+
+  "nodebugcheat.configuration.title": "NoDebugCheat 설정",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml": "NoDebugCheat 설정",
+  "nodebugcheat.configuration.section.nodebugcheat.common.toml.title": "NoDebugCheat 설정",
+
+  "nodebugcheat.configuration.blockDebugOverlay": "디버그 오버레이 차단",
+  "nodebugcheat.configuration.blockHitboxes": "히트박스 표시 차단",
+  "nodebugcheat.configuration.blockChunkBorders": "청크 경계 차단",
+  "nodebugcheat.configuration.opPermissionLevel": "필요한 권한 레벨",
+  "nodebugcheat.configuration.authorizedUuids": "허용된 플레이어 UUID",
+  "nodebugcheat.configuration.showCompassCoordinates": "나침반 좌표 표시",
+  "nodebugcheat.configuration.compassExactCoordinates": "정확한 나침반 좌표"
+}
