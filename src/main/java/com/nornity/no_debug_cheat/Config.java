@@ -20,6 +20,10 @@ public class Config {
             .comment("Block F3+G chunk border rendering for players below the required permission level")
             .define("blockChunkBorders", true);
 
+    public static final ModConfigSpec.BooleanValue BLOCK_SOUND_CAPTIONS = BUILDER
+            .comment("Block sound captions/subtitles for players below the required permission level")
+            .define("blockSoundCaptions", true);
+
     public static final ModConfigSpec.IntValue OP_PERMISSION_LEVEL = BUILDER
             .comment("Minimum vanilla permission level required to use debug features (1–4; 2 = standard op)")
             .defineInRange("opPermissionLevel", 2, 1, 4);

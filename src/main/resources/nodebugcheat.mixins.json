@@ -6,7 +6,8 @@
   "client": [
     "DebugScreenOverlayMixin",
     "MinecraftDebugKeysMixin",
-    "GuiCompassMixin"
+    "GuiCompassMixin",
+    "SubtitleOverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1
